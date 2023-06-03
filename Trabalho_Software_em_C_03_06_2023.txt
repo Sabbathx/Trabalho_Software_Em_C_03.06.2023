@@ -1,0 +1,138 @@
+// Questão 1:-------------------------------------------------------------------------
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <unistd.h>
+
+void processoPai(pid_t pid_pai, pid_t pid_filho) {
+    printf("PID do processo pai: %d\n", pid_pai);
+    printf("PID do processo filho: %d\n", pid_filho);
+}
+
+
+void processoFilho() {
+    printf("PID do processo filho: %d\n", getpid());
+}
+
+int main(void){
+    int i;
+    pid_t pid, pid_pai, pid_filho;
+
+    pid_pai = getpid();
+    
+    pid_filho = fork();
+    
+    
+    if ((pid = fork()) < 0) {
+        perror("fork");
+        exit(1);
+    }
+    if (pid == 0) {
+        processoFilho();
+    }
+    else{
+        processoPai(pid_pai, pid_filho);
+    }
+    printf("Este print sera executada por ambos os processos\n\n");
+    exit(0);
+}
+
+// Questão 2:-------------------------------------------------------------------------
+
+#include <stdio.h> 
+#include <windows.h> 
+
+
+void abrirPorta(int idporta){
+    printf("Abrindo porta...");
+    idporta = OpenComm("COM1", 1024, 128);
+    printf("Porta aberta!");
+}
+
+
+void configurarPorta(int idporta){
+    printf("Configurando a porta de comunicação...");
+    setCommState();
+    printf("Porta de comunicação configurada!");
+}
+
+    
+void obterValores(int idporta, int valor_porta){
+    GetCommState(idporta, &valor_porta);
+    printf("Valor da porta: %d", valor_porta);
+}
+    
+    
+void obterErro(int idporta, int valor_erro){
+    GetCommError(idporta, &valor_erro);
+    printf("Valor do erro: %d", valor_erro);
+}
+
+
+void fecharPorta(int idporta){
+    printf("Fechando a porta...");
+    CloseComm(idporta);
+    printf("Porta fechada!");
+}
+    
+
+int main(void) {
+    
+    int idporta, choice, valor_porta, valor_erro;
+    DCB confporta;
+    
+
+    //início do teste de porta serial
+    printf("Testando a porta serial...");
+    
+    idporta = OpenComm("COM1", 1024, 128);
+    
+    if (idporta < 0) {
+        printf("ERRO: Não foi possível abrir a porta COM1.\n");
+        return 1;
+    }
+        // caso a porta esteja aberta executa
+    if (GetCommState(idporta, &confporta) < 0) {
+        printf("ERRO: Não foi possível obter os parâmetros de configuração.\n");
+        return 2;
+    }
+    
+    printf("Fim do teste de porta serial.")
+    //fim do teste de porta serial
+    
+    
+    do{
+        printf("Menu de seleção:\n");
+        printf("1 - Abrir a porta\n");
+        printf("2 - Configurar a porta de comunicação\n");
+        printf("3 - Obter os valores de configuração\n");
+        printf("4 - Obter info sobre erro.\n");
+        printf("5 - Fechar a porta.\n");
+        printf("Selecione uma opção: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                abrirPorta()
+                break;
+            case 2:
+                configurarPorta()
+                break;
+            case 3:
+                obterValores()
+                break;
+            case 4:
+                obterErro()
+                break;
+            case 5:
+                fecharPorta()
+                break;
+            default:
+                printf("ERRO: Opção inválida. Por favor, selecione uma opção válida.\n");
+        }
+    } while (choice != 0);
+    break;
+    
+    return 0;
+}
